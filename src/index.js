@@ -10,6 +10,7 @@ import tags from "./commands/tags.js";
 import users from "./commands/users.js";
 import userInfo from "./commands/userInfo.js";
 import collectives from "./commands/collectives.js";
+import help from "./commands/help.js";
 configDotenv()
 const token = process.env.DISCORD_TOKEN;
 const clientId = process.env.DISCORD_CLIENT_ID;
@@ -46,7 +47,7 @@ const commands = [
       .setRequired(true)),
   new SlashCommandBuilder()
   .setName('tags')
-  .setDescription('View the top 5 tags on stackoverflow'),
+  .setDescription('View the top 5 tags on stack Overflow'),
   new SlashCommandBuilder()
   .setName('users')
   .setDescription('View a list of the top 25 users by reputation'),
@@ -59,7 +60,10 @@ const commands = [
       .setRequired(true)),
   new SlashCommandBuilder()
   .setName('collectives')
-  .setDescription('Get the first 25 collectives on stackoverflow by alphabetical order')
+  .setDescription('Get the first 25 collectives on stackoverflow by alphabetical order'),
+  new SlashCommandBuilder()
+  .setName('help')
+  .setDescription('This is the help command')
 ];
 
 (async () => {
@@ -95,6 +99,8 @@ client.on('interactionCreate', async interaction =>{
         await userInfo(interaction, interaction.options.getString('id'))
       }else if(commandName =='collectives'){
         await collectives(interaction)
+      }else if(commandName =='help'){
+        help(interaction)
       }
     }
 })
