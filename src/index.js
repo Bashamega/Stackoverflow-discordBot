@@ -39,7 +39,7 @@ const commands = [
             .setRequired(true)),
   new SlashCommandBuilder()
     .setName('question')
-    .setDescription('Veiw a question details on Stack Overflow')
+    .setDescription('View a question details on Stack Overflow')
     .addStringOption(option =>
     option.setName('id')
       .setDescription('Please enter the question id')
