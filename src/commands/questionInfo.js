@@ -1,0 +1,67 @@
+import { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle} from "discord.js"
+import axios from "axios"
+export default async function info(interaction, query){
+    if(query){
+        const  url = `https://api.stackexchange.com/2.3/search?order=desc&sort=activity&intitle=${query}&site=stackoverflow`
+        axios.get(url).then((response)=>{
+            const questions = response.data.items;
+            if(questions.length == 0 ){
+                interaction.reply('No question is found. Please try another search querry')
+            }else{
+                const question = questions[0]
+                let tags = ""
+                const date = new Date(question.creation_date * 1000);
+                const year = date.getFullYear();
+                const month = (date.getMonth() + 1).toString().padStart(2, '0'); // Month is zero-indexed, so add 1
+                const day = date.getDate().toString().padStart(2, '0');
+                const formattedDate = `${month}/${day}/${year}`;
+
+                question.tags.forEach((tag)=>{
+                    if(tags ==""){
+                        tags = tag
+                    }else{
+                        tags =`${tags}, ${tag}`
+                    }
+                })
+                const result = new EmbedBuilder()
+                    .setTitle(question.title)
+                    .addFields({
+                        name:'Author:',
+                        value: `[${question.owner.display_name}](${question.owner.link})`
+                    })
+                    .addFields({
+                        name: 'Tags:',
+                        value: tags
+                    })
+                    .addFields({
+                        name: "Answered:",
+                        value: question.is_answered?"yes":"no"
+                    })
+                    .addFields({
+                        name:'Views:',
+                        value: `${question.view_count}`
+                    })
+                    .addFields({
+                        name: 'Creation Date:',
+                        value:formattedDate
+                    })
+                    .setFooter({text:'Created By Adam Basha'})
+                const button = new ButtonBuilder()
+                    .setLabel('Open')
+                    .setStyle(ButtonStyle.Link)
+                    .setURL(question.link)
+
+
+                const row = new ActionRowBuilder()
+                .addComponents(button)
+                interaction.reply({embeds: [result], components: [row]})
+            }
+        }).catch(e=>{
+            interaction.reply("An error has occured please try again later");
+            console.log(e)
+        })
+    }else{
+        interaction.reply("Please provide an id")
+    }
+    
+}
