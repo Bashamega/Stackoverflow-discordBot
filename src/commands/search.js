@@ -1,5 +1,6 @@
 import { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle} from "discord.js"
 import axios from "axios"
+import he from 'he'
 export default async function search(interaction, query){
     if(query){
         const  url = `https://api.stackexchange.com/2.3/search?order=desc&sort=activity&intitle=${query}&site=stackoverflow`
@@ -27,10 +28,10 @@ export default async function search(interaction, query){
                         }
                     })
                     const result = new EmbedBuilder()
-                    .setTitle(question.title)
+                    .setTitle(he.decode(question.title))
                     .addFields({
                         name:'Author:',
-                        value: `[${question.owner.display_name}](${question.owner.link})`
+                        value: `[${he.decode(question.owner.display_name)}](${question.owner.link})`
                     })
                     .addFields({
                         name: 'Tags:',
@@ -57,7 +58,7 @@ export default async function search(interaction, query){
 
                     const row = new ActionRowBuilder()
                     .addComponents(button)
-                    interaction.reply({embeds: [result], components: [row]})
+                    interaction.reply({embeds: [result], components: [row], ephemeral: true})
                     
                 }else{
                     const search = new EmbedBuilder()
@@ -67,7 +68,7 @@ export default async function search(interaction, query){
                     questions.forEach((question, index) => {
                     if(index <25){
                         search.addFields({
-                            name:`${index + 1}. ${decodeURI(question.title)} #${question.question_id}`,
+                            name:`${index + 1}. ${he.decode(question.title)} #${question.question_id}`,
                             value: `[open](${question.link})`
                             }) 
                         }
